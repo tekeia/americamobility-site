@@ -34,7 +34,11 @@
   input::placeholder{color:#a3a8b3}
   form button{background:var(--blue);color:#fff;border:0;border-radius:9px;padding:0 24px;font:inherit;font-weight:600;cursor:pointer;transition:background .15s}
   form button:hover{background:var(--blue-2)}
-  .email-row{margin-top:22px}
+  .chips-label{margin:26px 0 10px;color:var(--muted);font-size:.85rem;letter-spacing:.04em;text-transform:uppercase}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .chip{background:#fff;border:1px solid var(--line);color:var(--ink);padding:9px 16px;border-radius:999px;cursor:pointer;font:inherit;font-size:.92rem;font-weight:500;transition:all .15s}
+  .chip:hover{border-color:var(--blue);color:var(--blue);background:#f3f6fe}
+  .email-row{margin-top:30px}
   .email-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--ink);color:var(--ink);
     padding:12px 22px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;
     transition:background .2s,color .2s,border-color .2s,transform .2s,box-shadow .2s}
@@ -64,13 +68,16 @@
 </div>
 
 <main>
-  <h1 data-i18n="title">What brings you to this website?</h1>
+  <h1 data-i18n="title">What brings you to our website?</h1>
   <p class="sub" data-i18n="sub">Tell us what you're looking for and we'll point you in the right direction.</p>
 
   <form id="search" role="search" autocomplete="off">
     <input id="q" type="search" maxlength="200" data-i18n-ph="ph" placeholder="What are you looking for?" aria-label="Search">
     <button type="submit" data-i18n="go">Search</button>
   </form>
+
+  <p class="chips-label" data-i18n="chipsLabel">Popular topics</p>
+  <div class="chips" id="chips"></div>
 
   <div class="email-row">
     <a class="email-btn" id="emailBtn" href="mailto:info@americamobility.com">✉ <span data-i18n="email">Send us an email</span></a>
@@ -92,10 +99,10 @@ const WHATSAPP = "";  // e.g. "13055551234" (digits only) — leave empty to hid
 /* ============ CONTENT ============ */
 // Each intent: keywords in EN/PT/ES used for matching, and a result card.
 const INTENTS = [
-  { id:"export", kw:["export","ship","shipping","paraguay","car","vehicle","truck","auto","buy car","exportar","carro","veiculo","veículo","envio","comprar carro","coche","vehiculo","vehículo","camioneta","enviar","auction","copart","iaai","corvette"],
-    t:{en:["Vehicle export","We source and buy US vehicles on your behalf — inspections, title, and coordination through export."],
-       pt:["Exportação de veículos","Encontramos e compramos veículos nos EUA para você — inspeção, título e coordenação até a exportação."],
-       es:["Exportación de vehículos","Buscamos y compramos vehículos en EE.UU. por usted — inspección, título y coordinación hasta la exportación."]}},
+  { id:"export", kw:["export","import","importar","importação","importacion","importación","ship","shipping","paraguay","car","vehicle","truck","auto","buy car","exportar","carro","veiculo","veículo","envio","comprar carro","coche","vehiculo","vehículo","camioneta","enviar","auction","copart","iaai","corvette"],
+    t:{en:["Export / Import","We source and buy US vehicles on your behalf — inspections, title, and coordination through export."],
+       pt:["Exportação / Importação","Encontramos e compramos veículos nos EUA para você — inspeção, título e coordenação até a exportação."],
+       es:["Exportación / Importación","Buscamos y compramos vehículos en EE.UU. por usted — inspección, título y coordinación hasta la exportación."]}},
   { id:"immigration", kw:["visa","green card","immigration","eb1","eb-1","eb2","eb-2","niw","h1b","h-1b","o1","o-1","petition","imigração","imigracao","visto","greencard","inmigración","inmigracion","residencia","work permit","uscis"],
     t:{en:["Immigration services","Support for professionals pursuing EB-1, EB-2 NIW and related pathways — flat fee, paid on success."],
        pt:["Serviços de imigração","Apoio a profissionais buscando EB-1, EB-2 NIW e caminhos relacionados — taxa fixa, paga no sucesso."],
@@ -112,17 +119,27 @@ const INTENTS = [
     t:{en:["Jobs & partnerships","Interested in working with us or partnering? Send us a note."],
        pt:["Vagas e parcerias","Quer trabalhar ou fazer parceria conosco? Mande uma mensagem."],
        es:["Empleo y alianzas","¿Le interesa trabajar o asociarse con nosotros? Escríbanos."]}},
+  { id:"fitness", kw:["fitness","gym","workout","exercise","training","trainer","stretch","stretching","yoga","pilates","mobility training","academia","treino","exercicio","exercício","alongamento","gimnasio","entrenamiento","ejercicio","estiramiento"],
+    t:{en:["Fitness","Looking for something fitness-related? Tell us a bit more about what you need and we'll get back to you."],
+       pt:["Fitness","Procurando algo relacionado a fitness? Conte um pouco mais do que precisa e retornaremos."],
+       es:["Fitness","¿Busca algo relacionado con fitness? Cuéntenos un poco más de lo que necesita y le responderemos."]}},
+  { id:"equipment", kw:["wheelchair","scooter","mobility scooter","walker","rollator","cane","crutch","crutches","lift","ramp","equipment","mobility equipment","medical equipment","cadeira de rodas","andador","muleta","rampa","equipamento","silla de ruedas","andadera","muleta","equipo","equipamiento"],
+    t:{en:["Mobility equipment","Looking for mobility equipment like wheelchairs, scooters or walkers? Tell us what you need and we'll get back to you."],
+       pt:["Equipamentos de mobilidade","Procurando equipamentos como cadeiras de rodas, scooters ou andadores? Conte o que precisa e retornaremos."],
+       es:["Equipos de movilidad","¿Busca equipos como sillas de ruedas, scooters o andaderas? Cuéntenos qué necesita y le responderemos."]}},
 ];
 
+const CHIPS = ["fitness","equipment","export","immigration"];
+
 const I18N = {
-  en:{title:'What brings you to this website?',sub:"Tell us what you're looking for and we'll point you in the right direction.",
-      ph:"What are you looking for?",go:"Search",email:"Send us an email",
+  en:{title:'What brings you to our website?',sub:"Tell us what you're looking for and we'll point you in the right direction.",
+      ph:"What are you looking for?",go:"Search",email:"Send us an email",chipsLabel:"Popular topics",chip:{fitness:"Fitness",equipment:"Mobility equipment",export:"Export / Import",immigration:"Immigration"},
       contact:"Contact us",wa:"WhatsApp",noTitle:"We didn't find an exact match",noBody:"No problem — we've noted what you searched. Reach out and we'll help directly."},
-  pt:{title:'O que te traz a este site?',sub:"Conte o que procura e nós te indicamos o caminho certo.",
-      ph:"O que você procura?",go:"Buscar",email:"Envie um e-mail",
+  pt:{title:'O que te traz ao nosso site?',sub:"Conte o que procura e nós te indicamos o caminho certo.",
+      ph:"O que você procura?",go:"Buscar",email:"Envie um e-mail",chipsLabel:"Assuntos populares",chip:{fitness:"Fitness",equipment:"Equipamentos de mobilidade",export:"Exportação / Importação",immigration:"Imigração"},
       contact:"Fale conosco",wa:"WhatsApp",noTitle:"Não encontramos uma correspondência exata",noBody:"Sem problema — anotamos sua busca. Fale com a gente e ajudamos diretamente."},
-  es:{title:'¿Qué le trae a este sitio web?',sub:"Díganos qué busca y le indicaremos el camino correcto.",
-      ph:"¿Qué está buscando?",go:"Buscar",email:"Envíenos un correo",
+  es:{title:'¿Qué le trae a nuestro sitio web?',sub:"Díganos qué busca y le indicaremos el camino correcto.",
+      ph:"¿Qué está buscando?",go:"Buscar",email:"Envíenos un correo",chipsLabel:"Temas populares",chip:{fitness:"Fitness",equipment:"Equipos de movilidad",export:"Exportación / Importación",immigration:"Inmigración"},
       contact:"Contáctenos",wa:"WhatsApp",noTitle:"No encontramos una coincidencia exacta",noBody:"No hay problema — anotamos su búsqueda. Contáctenos y le ayudamos directamente."}
 };
 
@@ -162,6 +179,7 @@ function applyLang() {
   document.querySelectorAll("[data-i18n]").forEach(el => el.innerHTML = L[el.dataset.i18n]);
   $("#q").placeholder = L.ph;
   document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
+  $("#chips").innerHTML = CHIPS.map(c => `<button type="button" class="chip" data-intent="${c}">${L.chip[c]}</button>`).join("");
   $("#results").innerHTML = "";
 }
 
@@ -192,6 +210,13 @@ function search(raw) {
 }
 
 $("#search").addEventListener("submit", e => { e.preventDefault(); search($("#q").value); });
+
+$("#chips").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  const id = b.dataset.intent;
+  lastSent = 0; track("chip", id);
+  $("#results").innerHTML = card(INTENTS.find(i => i.id === id), "");
+});
 
 $("#results").addEventListener("click", e => {
   const a = e.target.closest("[data-cta]"); if (a) track("contact_click", a.dataset.for, { channel: a.dataset.cta });
