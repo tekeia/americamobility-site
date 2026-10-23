@@ -35,9 +35,12 @@
   form button{background:var(--blue);color:#fff;border:0;border-radius:9px;padding:0 24px;font:inherit;font-weight:600;cursor:pointer;transition:background .15s}
   form button:hover{background:var(--blue-2)}
   .email-row{margin-top:22px}
-  .email-btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);border:1px solid var(--ink);color:#fff;
-    padding:12px 22px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;transition:all .15s}
-  .email-btn:hover{background:#2a2f3a;border-color:#2a2f3a}
+  .email-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--ink);color:var(--ink);
+    padding:12px 22px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;
+    transition:background .2s,color .2s,border-color .2s,transform .2s,box-shadow .2s}
+  .email-btn:hover{background:var(--blue);border-color:var(--blue);color:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(29,78,216,.25)}
+  .email-btn:active{transform:translateY(0);box-shadow:none}
+  .email-note{display:block;margin-top:10px;font-style:italic;color:var(--muted);font-size:.9rem}
   #results{margin-top:40px;display:grid;gap:12px;text-align:left}
   .card{background:var(--soft);border:1px solid var(--line);border-radius:var(--radius);padding:22px;animation:in .25s ease}
   .card h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:1.45rem;margin-bottom:6px;color:var(--ink)}
@@ -71,6 +74,7 @@
 
   <div class="email-row">
     <a class="email-btn" id="emailBtn" href="mailto:info@americamobility.com">✉ <span data-i18n="email">Send us an email</span></a>
+    <span class="email-note">info@americamobility.com</span>
   </div>
 
   <section id="results" aria-live="polite"></section>
