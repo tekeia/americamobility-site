@@ -17,10 +17,8 @@
   a{color:var(--gold-2)}
   .topbar{border-bottom:1px solid var(--line)}
   header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 24px;max-width:1000px;margin:0 auto}
-  .brand{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;text-transform:uppercase;
-    line-height:.95;letter-spacing:.14em;color:#111;text-decoration:none;display:inline-block}
-  .brand span{display:block;font-size:clamp(2rem,6vw,3rem)}
-  .brand span+span{margin-top:4px}
+  .brand{display:inline-block;line-height:0}
+  .brand img{height:clamp(44px,8vw,68px);width:auto;display:block}
   .lang{display:flex;gap:4px}
   .lang button{background:transparent;border:1px solid var(--line);color:var(--muted);padding:6px 10px;border-radius:8px;cursor:pointer;font:inherit;font-size:.78rem;font-weight:600;letter-spacing:.05em}
   .lang button.active{border-color:var(--ink);background:var(--ink);color:#fff}
@@ -55,12 +53,31 @@
   @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   footer{text-align:center;color:#9aa0ab;font-size:.8rem;padding:24px 16px;border-top:1px solid var(--line)}
   @media (max-width:480px){form button{padding:0 16px} main{padding-top:56px}}
+  /* ===== Topographic statement band ===== */
+  .topo{position:relative;overflow:hidden;background:#0f2350;color:#eef2fb}
+  .topo canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .topo-inner{position:relative;max-width:1000px;margin:0 auto;padding:110px 24px 100px;min-height:520px;display:flex;flex-direction:column;justify-content:center}
+  .slide-tag{font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#a9bce6;margin-bottom:26px}
+  .slide-text{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;font-size:clamp(1.9rem,4.6vw,3.4rem);line-height:1.12;letter-spacing:-.01em;max-width:880px}
+  .slide-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:40px}
+  .slide-by{border-left:1px solid rgba(238,242,251,.35);padding-left:16px;font-size:.92rem;font-weight:600}
+  .slide-anim{transition:opacity .45s ease,transform .45s ease}
+  .slide-anim.out{opacity:0;transform:translateY(10px)}
+  .arrows{display:flex;gap:12px}
+  .arrow{width:48px;height:48px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;
+    background:rgba(238,242,251,.12);color:#fff;transition:background .2s,transform .2s}
+  .arrow:hover{background:rgba(238,242,251,.32);transform:scale(1.06)}
+  .arrow svg{width:20px;height:20px}
+  .dots{display:flex;gap:6px;margin-top:22px}
+  .dots span{width:6px;height:6px;border-radius:50%;background:rgba(238,242,251,.3);transition:all .3s}
+  .dots span.on{width:22px;border-radius:3px;background:#fff}
+  @media (max-width:600px){.topo-inner{padding:80px 20px 70px;min-height:460px}}
 </style>
 </head>
 <body>
 <div class="topbar">
 <header>
-  <a class="brand" href="/" aria-label="America Mobility"><span>America</span><span>Mobility</span></a>
+  <a class="brand" href="/" aria-label="America Mobility"><img src="logo.png" alt="America Mobility" width="900" height="282"></a>
   <div class="lang" role="group" aria-label="Language">
     <button data-lang="en">EN</button><button data-lang="pt">PT</button><button data-lang="es">ES</button>
   </div>
@@ -86,6 +103,24 @@
 
   <section id="results" aria-live="polite"></section>
 </main>
+
+<section class="topo" aria-roledescription="carousel" aria-label="About America Mobility">
+  <canvas id="topoCanvas" aria-hidden="true"></canvas>
+  <div class="topo-inner">
+    <div class="slide-anim" id="slideBox">
+      <p class="slide-tag" id="slideTag"></p>
+      <p class="slide-text" id="slideText"></p>
+    </div>
+    <div class="slide-foot">
+      <div class="slide-by slide-anim" id="slideBy"></div>
+      <div class="arrows">
+        <button class="arrow" id="prevSlide" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg></button>
+        <button class="arrow" id="nextSlide" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+    <div class="dots" id="dots"></div>
+  </div>
+</section>
 
 <footer>© <span id="yr"></span> America Mobility LLC · Florida</footer>
 
@@ -133,13 +168,13 @@ const CHIPS = ["fitness","equipment","export","immigration"];
 
 const I18N = {
   en:{title:'What brings you to our website?',sub:"Tell us what you're looking for and we'll point you in the right direction.",
-      ph:"What are you looking for?",go:"Search",email:"Send us an email",chipsLabel:"Popular topics",chip:{fitness:"Fitness",equipment:"Mobility equipment",export:"Export / Import",immigration:"Immigration"},
+      ph:"What are you looking for?",go:"Search",email:"Send us an email",chipsLabel:"Popular topics",slides:[["Vehicle export","We find the right vehicle in the US, inspect it, and handle everything through export.","Export / Import"],["Immigration","Flat-fee support for professionals building their future in the United States. You pay when you succeed.","Immigration"],["Who we are","A Florida team that speaks your language: English, Português and Español.","America Mobility LLC"]],chip:{fitness:"Fitness",equipment:"Mobility equipment",export:"Export / Import",immigration:"Immigration"},
       contact:"Contact us",wa:"WhatsApp",noTitle:"We didn't find an exact match",noBody:"No problem — we've noted what you searched. Reach out and we'll help directly."},
   pt:{title:'O que te traz ao nosso site?',sub:"Conte o que procura e nós te indicamos o caminho certo.",
-      ph:"O que você procura?",go:"Buscar",email:"Envie um e-mail",chipsLabel:"Assuntos populares",chip:{fitness:"Fitness",equipment:"Equipamentos de mobilidade",export:"Exportação / Importação",immigration:"Imigração"},
+      ph:"O que você procura?",go:"Buscar",email:"Envie um e-mail",chipsLabel:"Assuntos populares",slides:[["Exportação de veículos","Encontramos o veículo certo nos EUA, inspecionamos e cuidamos de tudo até a exportação.","Exportação / Importação"],["Imigração","Apoio com taxa fixa para profissionais construindo o futuro nos Estados Unidos. Você paga quando tiver sucesso.","Imigração"],["Quem somos","Uma equipe na Flórida que fala a sua língua: English, Português e Español.","America Mobility LLC"]],chip:{fitness:"Fitness",equipment:"Equipamentos de mobilidade",export:"Exportação / Importação",immigration:"Imigração"},
       contact:"Fale conosco",wa:"WhatsApp",noTitle:"Não encontramos uma correspondência exata",noBody:"Sem problema — anotamos sua busca. Fale com a gente e ajudamos diretamente."},
   es:{title:'¿Qué le trae a nuestro sitio web?',sub:"Díganos qué busca y le indicaremos el camino correcto.",
-      ph:"¿Qué está buscando?",go:"Buscar",email:"Envíenos un correo",chipsLabel:"Temas populares",chip:{fitness:"Fitness",equipment:"Equipos de movilidad",export:"Exportación / Importación",immigration:"Inmigración"},
+      ph:"¿Qué está buscando?",go:"Buscar",email:"Envíenos un correo",chipsLabel:"Temas populares",slides:[["Exportación de vehículos","Encontramos el vehículo correcto en EE.UU., lo inspeccionamos y nos encargamos de todo hasta la exportación.","Exportación / Importación"],["Inmigración","Apoyo con tarifa fija para profesionales que construyen su futuro en Estados Unidos. Usted paga cuando tiene éxito.","Inmigración"],["Quiénes somos","Un equipo en Florida que habla su idioma: English, Português y Español.","America Mobility LLC"]],chip:{fitness:"Fitness",equipment:"Equipos de movilidad",export:"Exportación / Importación",immigration:"Inmigración"},
       contact:"Contáctenos",wa:"WhatsApp",noTitle:"No encontramos una coincidencia exacta",noBody:"No hay problema — anotamos su búsqueda. Contáctenos y le ayudamos directamente."}
 };
 
@@ -181,6 +216,7 @@ function applyLang() {
   document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
   $("#chips").innerHTML = CHIPS.map(c => `<button type="button" class="chip" data-intent="${c}">${L.chip[c]}</button>`).join("");
   $("#results").innerHTML = "";
+  if (typeof renderSlide === "function") renderSlide(false);
 }
 
 function contactLinks(intent, query) {
@@ -245,8 +281,156 @@ $("#emailBtn").addEventListener("click", e => {
   lastSent = 0; track("contact_click", q || "email_button", { channel: "email" });
 });
 
+/* ============ STATEMENT CAROUSEL ============ */
+let slideIdx = 0, slideTimer = null;
+function renderSlide(animate = true) {
+  const slides = I18N[lang].slides, box = $("#slideBox"), by = $("#slideBy");
+  const apply = () => {
+    const [tag, text, who] = slides[slideIdx];
+    $("#slideTag").textContent = tag; $("#slideText").textContent = text; by.textContent = who;
+    $("#dots").innerHTML = slides.map((_, i) => `<span class="${i === slideIdx ? "on" : ""}"></span>`).join("");
+    box.classList.remove("out"); by.classList.remove("out");
+  };
+  if (!animate) return apply();
+  box.classList.add("out"); by.classList.add("out");
+  setTimeout(apply, 380);
+}
+function goSlide(d) {
+  const n = I18N[lang].slides.length;
+  slideIdx = (slideIdx + d + n) % n; renderSlide(); restartSlides();
+}
+function restartSlides() { clearInterval(slideTimer); slideTimer = setInterval(() => goSlide(1), 7000); }
+$("#prevSlide").addEventListener("click", () => goSlide(-1));
+$("#nextSlide").addEventListener("click", () => goSlide(1));
+$(".topo").addEventListener("mouseenter", () => clearInterval(slideTimer));
+$(".topo").addEventListener("mouseleave", restartSlides);
+
+/* ============ ANIMATED ASCII TOPOGRAPHY ============ */
+(() => {
+  const cvs = $("#topoCanvas"), ctx = cvs.getContext("2d");
+  // compact 3D simplex noise
+  const perm = new Uint8Array(512), grad = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
+  { const p = [...Array(256).keys()]; for (let i = 255; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [p[i], p[j]] = [p[j], p[i]]; } for (let i = 0; i < 512; i++) perm[i] = p[i & 255]; }
+  function noise(x, y, z) {
+    const F = 1/3, G = 1/6, s = (x + y + z) * F, i = Math.floor(x + s), j = Math.floor(y + s), k = Math.floor(z + s);
+    const t = (i + j + k) * G, x0 = x - i + t, y0 = y - j + t, z0 = z - k + t;
+    let i1, j1, k1, i2, j2, k2;
+    if (x0 >= y0) { if (y0 >= z0) [i1,j1,k1,i2,j2,k2] = [1,0,0,1,1,0]; else if (x0 >= z0) [i1,j1,k1,i2,j2,k2] = [1,0,0,1,0,1]; else [i1,j1,k1,i2,j2,k2] = [0,0,1,1,0,1]; }
+    else { if (y0 < z0) [i1,j1,k1,i2,j2,k2] = [0,0,1,0,1,1]; else if (x0 < z0) [i1,j1,k1,i2,j2,k2] = [0,1,0,0,1,1]; else [i1,j1,k1,i2,j2,k2] = [0,1,0,1,1,0]; }
+    const pts = [[x0, y0, z0, 0, 0, 0], [x0 - i1 + G, y0 - j1 + G, z0 - k1 + G, i1, j1, k1], [x0 - i2 + 2*G, y0 - j2 + 2*G, z0 - k2 + 2*G, i2, j2, k2], [x0 - 1 + 3*G, y0 - 1 + 3*G, z0 - 1 + 3*G, 1, 1, 1]];
+    const ii = i & 255, jj = j & 255, kk = k & 255; let n = 0;
+    for (const [a, b, c, di, dj, dk] of pts) {
+      let tt = 0.6 - a*a - b*b - c*c; if (tt < 0) continue;
+      const g = grad[perm[ii + di + perm[jj + dj + perm[kk + dk]]] % 12];
+      tt *= tt; n += tt * tt * (g[0]*a + g[1]*b + g[2]*c);
+    }
+    return 32 * n;
+  }
+
+  // Always animate. Many Windows PCs report "reduced motion" when animation effects are off,
+  // so instead of freezing we just slow it down for those visitors.
+  const SPEED = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.5 : 1;
+
+  // character grid
+  const CW = 11, CH = 16;              // cell size in px
+  const BANDS = 5;                     // how many contour rings per unit of terrain
+  const REAL_EVERY = 4, REAL_OFFSET = 2;   // every 4th contour is drawn as a real line
+  const SPARKS = ["0", "*", "+", "o", "1", "×"];
+  let W = 0, H = 0, cols = 0, rows = 0, field = null, seed = null;
+
+  function resize() {
+    const r = cvs.parentElement.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height; cvs.width = W * dpr; cvs.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cols = Math.ceil(W / CW) + 2; rows = Math.ceil(H / CH) + 2;
+    field = new Float32Array(cols * rows);
+    seed = new Float32Array(cols * rows).map(() => Math.random());
+  }
+
+  function lineChar(gx, gy) {
+    // contour runs perpendicular to the gradient; pick the glyph that matches its slant
+    let a = Math.atan2(gy, gx) * 180 / Math.PI + 90;     // line angle in screen space
+    a = ((a % 180) + 180) % 180;
+    if (a < 22.5 || a >= 157.5) return "-";
+    if (a < 67.5) return "\\";
+    if (a < 112.5) return "|";
+    return "/";
+  }
+
+  function draw(t) {
+    const z = t * 0.00012 * SPEED, drift = t * 0.009 * SPEED;            // terrain morph + slow pan
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+      const px = x * CW + drift, py = y * CH;
+      field[y * cols + x] = noise(px * 0.0015, py * 0.0015, z) * 0.88 + noise(px * 0.005, py * 0.005, z * 1.7 + 50) * 0.12;
+    }
+    ctx.clearRect(0, 0, W, H);
+    ctx.font = `500 ${CH - 3}px ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    const flick = Math.floor(t / 140);                     // changes ~7 times a second
+
+    for (let y = 1; y < rows - 1; y++) for (let x = 1; x < cols - 1; x++) {
+      const i = y * cols + x, v = field[i] * BANDS;
+      const frac = v - Math.floor(v), d = Math.min(frac, 1 - frac);   // distance to nearest contour (0..0.5)
+      const gx = field[i + 1] - field[i - 1], gy = (field[i + cols] - field[i - cols]) * (CW / CH);
+      const slope = Math.max(Math.hypot(gx, gy) * 0.5 * BANDS, 0.02);  // contour change per cell
+      const cx = x * CW, cy = y * CH, r = seed[i];
+      const dist = d / slope;                                            // distance to the line, in cells
+      if (dist < 0.7 && Math.round(v) % REAL_EVERY !== REAL_OFFSET) {
+        const strength = 1 - dist / 0.7;
+        const major = Math.round(v) % 4 === 0;
+        let ch = lineChar(gx, gy);
+        // sprinkle digits/stars along the lines, re-rolled over time so the lines shimmer
+        if (((r * 997 + flick * (r > 0.5 ? 1 : 0)) % 1) < 0.12) ch = SPARKS[Math.floor((r * 31 + flick * 0.37) % SPARKS.length)];
+        const alpha = (major ? 0.72 : 0.42) * (0.5 + 0.5 * strength);
+        ctx.fillStyle = `rgba(196,212,248,${alpha.toFixed(3)})`;
+        ctx.fillText(ch, cx, cy);
+      } else if (r < 0.035) {
+        // faint background dust between the lines
+        ctx.fillStyle = `rgba(196,212,248,${(0.06 + 0.06 * Math.sin(t * 0.002 + r * 300)).toFixed(3)})`;
+        ctx.fillText(r < 0.012 ? "+" : ".", cx, cy);
+      }
+    }
+
+    // a few contours as real, continuous lines (marching squares on the same grid)
+    ctx.lineWidth = 1.2; ctx.lineJoin = "round"; ctx.lineCap = "round";
+    ctx.strokeStyle = "rgba(196,212,248,0.5)";
+    ctx.beginPath();
+    let lo = Infinity, hi = -Infinity;
+    for (let i = 0; i < field.length; i++) { if (field[i] < lo) lo = field[i]; if (field[i] > hi) hi = field[i]; }
+    for (let k = Math.ceil(lo * BANDS); k <= Math.floor(hi * BANDS); k++) {
+      if (((k % REAL_EVERY) + REAL_EVERY) % REAL_EVERY !== REAL_OFFSET) continue;
+      const lv = k / BANDS;
+      for (let y = 0; y < rows - 1; y++) for (let x = 0; x < cols - 1; x++) {
+        const a = field[y*cols+x], b = field[y*cols+x+1], c = field[(y+1)*cols+x+1], d = field[(y+1)*cols+x];
+        const idx = (a > lv ? 8 : 0) | (b > lv ? 4 : 0) | (c > lv ? 2 : 0) | (d > lv ? 1 : 0);
+        if (idx === 0 || idx === 15) continue;
+        const X = x * CW, Y = y * CH, f = (p, q) => (lv - p) / (q - p);
+        const T = [X + CW * f(a, b), Y], R = [X + CW, Y + CH * f(b, c)], B = [X + CW * f(d, c), Y + CH], L = [X, Y + CH * f(a, d)];
+        const seg = (p, q) => { ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); };
+        switch (idx) {
+          case 1: case 14: seg(L, B); break;   case 2: case 13: seg(B, R); break;
+          case 3: case 12: seg(L, R); break;   case 4: case 11: seg(T, R); break;
+          case 6: case 9:  seg(T, B); break;   case 7: case 8:  seg(L, T); break;
+          case 5: seg(L, T); seg(B, R); break; case 10: seg(T, R); seg(L, B); break;
+        }
+      }
+    }
+    ctx.stroke();
+  }
+
+    let visible = true, last = 0, start = performance.now() - Math.random() * 1e6;
+  function loop(now) {
+    if (visible && now - last > 33) { draw(now - start); last = now; }   // ~30fps
+    requestAnimationFrame(loop);
+  }
+  resize(); draw(performance.now() - start);
+  new ResizeObserver(() => { resize(); draw(performance.now() - start); }).observe(cvs.parentElement);
+  new IntersectionObserver(([e]) => visible = e.isIntersecting).observe(cvs);
+  requestAnimationFrame(loop);
+})();
+
 $("#yr").textContent = new Date().getFullYear();
 applyLang();
+renderSlide(false); restartSlides();
 track("visit", location.pathname);
 </script>
 </body>
