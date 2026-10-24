@@ -10,7 +10,7 @@
 <style>
   :root{
     --bg:#ffffff; --ink:#14171f; --muted:#6b7180; --line:#e4e6eb; --soft:#f6f6f4;
-    --blue:#1d4ed8; --blue-2:#1e40af; --gold:#b8913a; --gold-2:#9c7a2e; --radius:12px;
+    --blue:#203D78; --blue-2:#182e5c; --gold:#b8913a; --gold-2:#9c7a2e; --radius:12px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:"Manrope",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
@@ -30,7 +30,7 @@
   .sub{color:var(--muted);font-size:1.05rem;line-height:1.6;margin-bottom:40px}
   form{display:flex;gap:8px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:7px;
     box-shadow:0 6px 24px rgba(20,23,31,.06);transition:border-color .2s,box-shadow .2s}
-  form:focus-within{border-color:var(--blue);box-shadow:0 6px 28px rgba(29,78,216,.15)}
+  form:focus-within{border-color:var(--blue);box-shadow:0 6px 28px rgba(32,61,120,.15)}
   input[type=search]{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--ink);font:inherit;font-size:1.05rem;padding:12px 14px}
   input::placeholder{color:#a3a8b3}
   form button{background:var(--blue);color:#fff;border:0;border-radius:9px;padding:0 24px;font:inherit;font-weight:600;cursor:pointer;transition:background .15s}
@@ -38,12 +38,12 @@
   .chips-label{margin:26px 0 10px;color:var(--muted);font-size:.85rem;letter-spacing:.04em;text-transform:uppercase}
   .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
   .chip{background:#fff;border:1px solid var(--line);color:var(--ink);padding:9px 16px;border-radius:999px;cursor:pointer;font:inherit;font-size:.92rem;font-weight:500;transition:all .15s}
-  .chip:hover{border-color:var(--blue);color:var(--blue);background:#f3f6fe}
+  .chip:hover{border-color:var(--blue);color:var(--blue);background:#eef1f8}
   .email-row{margin-top:30px}
   .email-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--ink);color:var(--ink);
     padding:12px 22px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;
     transition:background .2s,color .2s,border-color .2s,transform .2s,box-shadow .2s}
-  .email-btn:hover{background:var(--blue);border-color:var(--blue);color:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(29,78,216,.25)}
+  .email-btn:hover{background:var(--blue);border-color:var(--blue);color:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(32,61,120,.25)}
   .email-btn:active{transform:translateY(0);box-shadow:none}
   .email-note{display:block;margin-top:10px;font-style:italic;color:var(--muted);font-size:.9rem}
   #results{margin-top:40px;display:grid;gap:12px;text-align:left}
@@ -108,6 +108,7 @@
   <section id="results" aria-live="polite"></section>
 </main>
 
+<!-- CAROUSEL (temporarily disabled) — remove this line and the matching end line to turn it back on
 <section class="topo" aria-roledescription="carousel" aria-label="About America Mobility">
   <canvas id="topoCanvas" aria-hidden="true"></canvas>
   <div class="topo-inner">
@@ -122,6 +123,7 @@
     <div class="dots" id="dots"></div>
   </div>
 </section>
+END CAROUSEL -->
 
 <footer>© <span id="yr"></span> America Mobility LLC · Florida</footer>
 
@@ -155,27 +157,35 @@ const INTENTS = [
     t:{en:["Jobs & partnerships","Interested in working with us or partnering? Send us a note."],
        pt:["Vagas e parcerias","Quer trabalhar ou fazer parceria conosco? Mande uma mensagem."],
        es:["Empleo y alianzas","¿Le interesa trabajar o asociarse con nosotros? Escríbanos."]}},
-  { id:"fitness", kw:["fitness","gym","workout","exercise","training","trainer","stretch","stretching","yoga","pilates","mobility training","academia","treino","exercicio","exercício","alongamento","gimnasio","entrenamiento","ejercicio","estiramiento"],
-    t:{en:["Fitness","Looking for something fitness-related? Tell us a bit more about what you need and we'll get back to you."],
-       pt:["Fitness","Procurando algo relacionado a fitness? Conte um pouco mais do que precisa e retornaremos."],
-       es:["Fitness","¿Busca algo relacionado con fitness? Cuéntenos un poco más de lo que necesita y le responderemos."]}},
-  { id:"equipment", kw:["wheelchair","scooter","mobility scooter","walker","rollator","cane","crutch","crutches","lift","ramp","equipment","mobility equipment","medical equipment","cadeira de rodas","andador","muleta","rampa","equipamento","silla de ruedas","andadera","muleta","equipo","equipamiento"],
-    t:{en:["Mobility equipment","Looking for mobility equipment like wheelchairs, scooters or walkers? Tell us what you need and we'll get back to you."],
-       pt:["Equipamentos de mobilidade","Procurando equipamentos como cadeiras de rodas, scooters ou andadores? Conte o que precisa e retornaremos."],
-       es:["Equipos de movilidad","¿Busca equipos como sillas de ruedas, scooters o andaderas? Cuéntenos qué necesita y le responderemos."]}},
+  { id:"scooters", kw:["mobility scooter","scooter","power chair","power wheelchair","electric wheelchair","wheelchair","motorized","scooter eletrico","scooter elétrico","cadeira de rodas","cadeira motorizada","scooter electrico","scooter eléctrico","silla de ruedas","silla electrica","silla eléctrica"],
+    t:{en:["Mobility Scooters","Looking for a mobility scooter or power chair? Tell us what you need and we'll get back to you."],
+       pt:["Scooters de Mobilidade","Procurando um scooter de mobilidade ou cadeira motorizada? Conte o que precisa e retornaremos."],
+       es:["Scooters de Movilidad","¿Busca un scooter de movilidad o silla eléctrica? Cuéntenos qué necesita y le responderemos."]}},
+  { id:"walking", kw:["walker","rollator","cane","crutch","crutches","walking stick","walking aid","walking aids","andador","bengala","muleta","muletas","andadera","baston","bastón"],
+    t:{en:["Walking Aids","Looking for a walker, rollator, cane or crutches? Tell us what you need and we'll get back to you."],
+       pt:["Auxílio para Caminhar","Procurando andador, bengala ou muletas? Conte o que precisa e retornaremos."],
+       es:["Ayudas para Caminar","¿Busca andadera, bastón o muletas? Cuéntenos qué necesita y le responderemos."]}},
+  { id:"daily", kw:["grab bar","shower chair","shower seat","bath","toilet seat","raised toilet","commode","reacher","ramp","stair lift","stairlift","bed rail","lift chair","accessibility","accessible","disability","daily living","barra de apoio","cadeira de banho","assento sanitario","rampa","acessibilidade","elevador de escada","barra de apoyo","silla de ducha","accesibilidad","discapacidad"],
+    t:{en:["Daily Living & Accessibility","Looking for home accessibility or daily living aids like grab bars, shower chairs or ramps? Tell us what you need and we'll get back to you."],
+       pt:["Vida Diária e Acessibilidade","Procurando itens de acessibilidade como barras de apoio, cadeiras de banho ou rampas? Conte o que precisa e retornaremos."],
+       es:["Vida Diaria y Accesibilidad","¿Busca artículos de accesibilidad como barras de apoyo, sillas de ducha o rampas? Cuéntenos qué necesita y le responderemos."]}},
+  { id:"stretching", kw:["stretch","stretching","flexibility","mobility exercise","mobility training","yoga","pilates","physical therapy","physio","foam roller","fitness","gym","workout","exercise","alongamento","flexibilidade","fisioterapia","exercicio","exercício","academia","estiramiento","flexibilidad","ejercicio","gimnasio"],
+    t:{en:["Stretching & Flexibility","Looking for stretching, flexibility or mobility exercise? Tell us a bit more and we'll get back to you."],
+       pt:["Alongamento e Flexibilidade","Procurando alongamento, flexibilidade ou exercícios de mobilidade? Conte um pouco mais e retornaremos."],
+       es:["Estiramiento y Flexibilidad","¿Busca estiramiento, flexibilidad o ejercicios de movilidad? Cuéntenos un poco más y le responderemos."]}},
 ];
 
-const CHIPS = ["fitness","equipment","export","immigration"];
+const CHIPS = ["scooters","walking","daily","stretching"];
 
 const I18N = {
   en:{title:'What brings you to our website?',sub:"Tell us what you're looking for and we'll point you in the right direction.",
-      ph:"What are you looking for?",go:"Search",email:"Send us an email",chipsLabel:"Popular topics",slides:[["Export / Import","Your import and export concierge. Whatever you want to buy, we find it, handle the purchase, and gather every document required to ship it.","Concierge service"],["Immigration","Flat-fee support for professionals building their future in the United States. You pay when you succeed.","Immigration"],["Who we are","A Florida team that speaks your language: English, Português and Español.","America Mobility LLC"]],chip:{fitness:"Fitness",equipment:"Mobility equipment",export:"Export / Import",immigration:"Immigration"},
+      ph:"What are you looking for?",go:"Search",email:"Send us an email",chipsLabel:"Popular topics",slides:[["Export / Import","Your import and export concierge. Whatever you want to buy, we find it, handle the purchase, and gather every document required to ship it.","Concierge service"],["Immigration","Flat-fee support for professionals building their future in the United States. You pay when you succeed.","Immigration"],["Who we are","A Florida team that speaks your language: English, Português and Español.","America Mobility LLC"]],chip:{scooters:"Mobility Scooters",walking:"Walking Aids",daily:"Daily Living & Accessibility",stretching:"Stretching & Flexibility"},
       contact:"Contact us",wa:"WhatsApp",noTitle:"We didn't find an exact match",noBody:"No problem — we've noted what you searched. Reach out and we'll help directly."},
   pt:{title:'O que te traz ao nosso site?',sub:"Conte o que procura e nós te indicamos o caminho certo.",
-      ph:"O que você procura?",go:"Buscar",email:"Envie um e-mail",chipsLabel:"Assuntos populares",slides:[["Exportação / Importação","Seu concierge de importação e exportação. Seja o que for que você queira comprar, nós encontramos, cuidamos da compra e reunimos todos os documentos necessários para o envio.","Serviço de concierge"],["Imigração","Apoio com taxa fixa para profissionais construindo o futuro nos Estados Unidos. Você paga quando tiver sucesso.","Imigração"],["Quem somos","Uma equipe na Flórida que fala a sua língua: English, Português e Español.","America Mobility LLC"]],chip:{fitness:"Fitness",equipment:"Equipamentos de mobilidade",export:"Exportação / Importação",immigration:"Imigração"},
+      ph:"O que você procura?",go:"Buscar",email:"Envie um e-mail",chipsLabel:"Assuntos populares",slides:[["Exportação / Importação","Seu concierge de importação e exportação. Seja o que for que você queira comprar, nós encontramos, cuidamos da compra e reunimos todos os documentos necessários para o envio.","Serviço de concierge"],["Imigração","Apoio com taxa fixa para profissionais construindo o futuro nos Estados Unidos. Você paga quando tiver sucesso.","Imigração"],["Quem somos","Uma equipe na Flórida que fala a sua língua: English, Português e Español.","America Mobility LLC"]],chip:{scooters:"Scooters de Mobilidade",walking:"Auxílio para Caminhar",daily:"Vida Diária e Acessibilidade",stretching:"Alongamento e Flexibilidade"},
       contact:"Fale conosco",wa:"WhatsApp",noTitle:"Não encontramos uma correspondência exata",noBody:"Sem problema — anotamos sua busca. Fale com a gente e ajudamos diretamente."},
   es:{title:'¿Qué le trae a nuestro sitio web?',sub:"Díganos qué busca y le indicaremos el camino correcto.",
-      ph:"¿Qué está buscando?",go:"Buscar",email:"Envíenos un correo",chipsLabel:"Temas populares",slides:[["Exportación / Importación","Su concierge de importación y exportación. Sea lo que sea que quiera comprar, lo encontramos, gestionamos la compra y reunimos todos los documentos necesarios para el envío.","Servicio de concierge"],["Inmigración","Apoyo con tarifa fija para profesionales que construyen su futuro en Estados Unidos. Usted paga cuando tiene éxito.","Inmigración"],["Quiénes somos","Un equipo en Florida que habla su idioma: English, Português y Español.","America Mobility LLC"]],chip:{fitness:"Fitness",equipment:"Equipos de movilidad",export:"Exportación / Importación",immigration:"Inmigración"},
+      ph:"¿Qué está buscando?",go:"Buscar",email:"Envíenos un correo",chipsLabel:"Temas populares",slides:[["Exportación / Importación","Su concierge de importación y exportación. Sea lo que sea que quiera comprar, lo encontramos, gestionamos la compra y reunimos todos los documentos necesarios para el envío.","Servicio de concierge"],["Inmigración","Apoyo con tarifa fija para profesionales que construyen su futuro en Estados Unidos. Usted paga cuando tiene éxito.","Inmigración"],["Quiénes somos","Un equipo en Florida que habla su idioma: English, Português y Español.","America Mobility LLC"]],chip:{scooters:"Scooters de Movilidad",walking:"Ayudas para Caminar",daily:"Vida Diaria y Accesibilidad",stretching:"Estiramiento y Flexibilidad"},
       contact:"Contáctenos",wa:"WhatsApp",noTitle:"No encontramos una coincidencia exacta",noBody:"No hay problema — anotamos su búsqueda. Contáctenos y le ayudamos directamente."}
 };
 
@@ -185,7 +195,10 @@ const session = (() => { try { let s = sessionStorage.getItem("am_sid"); if(!s){
 let lastSent = 0;
 
 function track(type, value, extra = {}) {
-  if (!LOG_ENDPOINT.startsWith("https://")) { console.log("[track]", type, value, extra); return; }
+  // Only log real visitors on the live site. Local previews (opening the file from your
+  // computer, localhost) just print to the console so they don't pollute the sheet.
+  const LIVE = /(^|\.)americamobility\.com$/.test(location.hostname) || location.hostname.endsWith("github.io");
+  if (!LIVE || !LOG_ENDPOINT.startsWith("https://")) { console.log("[track]", type, value, extra); return; }
   const now = Date.now();
   if (now - lastSent < 800) return;          // simple client-side throttle
   lastSent = now;
@@ -217,7 +230,7 @@ function applyLang() {
   document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
   $("#chips").innerHTML = CHIPS.map(c => `<button type="button" class="chip" data-intent="${c}">${L.chip[c]}</button>`).join("");
   $("#results").innerHTML = "";
-  if (typeof renderSlide === "function") renderSlide(true);
+  if (typeof HAS_CAROUSEL !== "undefined" && HAS_CAROUSEL) renderSlide(true);
 }
 
 function contactLinks(intent, query) {
@@ -283,6 +296,7 @@ $("#emailBtn").addEventListener("click", e => {
 });
 
 /* ============ STATEMENT CAROUSEL ============ */
+const HAS_CAROUSEL = !!document.querySelector(".topo");
 let slideIdx = 0, slideTimer = null;
 function renderSlide(rebuild = true) {
   const slides = I18N[lang].slides;
@@ -299,13 +313,16 @@ function goSlide(d) {
   slideIdx = (slideIdx + d + n) % n; renderSlide(false); restartSlides();
 }
 function restartSlides() { clearInterval(slideTimer); slideTimer = setInterval(() => goSlide(1), 7000); }
-$("#prevSlide").addEventListener("click", () => goSlide(-1));
-$("#nextSlide").addEventListener("click", () => goSlide(1));
-$(".topo").addEventListener("mouseenter", () => clearInterval(slideTimer));
-$(".topo").addEventListener("mouseleave", restartSlides);
+if (HAS_CAROUSEL) {
+  $("#prevSlide").addEventListener("click", () => goSlide(-1));
+  $("#nextSlide").addEventListener("click", () => goSlide(1));
+  $(".topo").addEventListener("mouseenter", () => clearInterval(slideTimer));
+  $(".topo").addEventListener("mouseleave", restartSlides);
+}
 
 /* ============ ANIMATED ASCII TOPOGRAPHY ============ */
 (() => {
+  if (!HAS_CAROUSEL) return;
   const cvs = $("#topoCanvas"), ctx = cvs.getContext("2d");
   // compact 3D simplex noise
   const perm = new Uint8Array(512), grad = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
@@ -429,7 +446,7 @@ $(".topo").addEventListener("mouseleave", restartSlides);
 
 $("#yr").textContent = new Date().getFullYear();
 applyLang();
-renderSlide(true); restartSlides();
+if (HAS_CAROUSEL) { renderSlide(true); restartSlides(); }
 track("visit", location.pathname);
 </script>
 </body>
